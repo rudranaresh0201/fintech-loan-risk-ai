@@ -40,24 +40,23 @@ affordable — not just approved.
 
 
 
-## System Architecture
+##  System Architecture
 
-React (Frontend)
-   ↓
-Axios (HTTP Client)
-   ↓
-FastAPI (Backend API)
-   ↓
+Frontend (React)
+    ↓
+API Layer (Axios)
+    ↓
+Backend (FastAPI)
+    ↓
 Service Layer (Business Logic)
-   ↓
-ML Model (Scikit-learn + Scaler)
-   ↓
+    ↓
+ML Model (Scikit-learn + StandardScaler)
+    ↓
 JSON Response → Dashboard UI
 
-The frontend communicates with the FastAPI backend via REST API.
-The backend processes user input, runs it through a StandardScaler
-and trained regression model, applies risk classification logic,
-and returns a structured JSON response rendered on the dashboard.
+The frontend communicates with the FastAPI backend via REST APIs.
+The backend processes user input, applies preprocessing and model inference,
+computes risk metrics, and returns structured results for visualization.
 
 
 
@@ -98,7 +97,7 @@ the predicted EMI for display on the dashboard.
 
   Accepts a JSON body with user financial details.
   Returns predicted EMI, affordability ratio, and risk category.
-### Sample Request
+## Sample Request
 
 ```json
 {
@@ -134,7 +133,7 @@ Frontend:
 
 
 
-## Planned Improvements
+##  Planned Improvements
 
 - Interactive charts using Recharts
 - Explainable AI — reasoning behind each risk classification
