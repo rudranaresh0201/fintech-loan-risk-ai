@@ -14,20 +14,19 @@ EMI Predict AI addresses this by combining financial logic with machine learning
 to give users instant, data-driven insights into whether a loan is truly
 affordable — not just approved.
 
----
 
-## Screenshots
+
+##  Screenshots
 
 ### Dashboard
-![Dashboard](./screenshots/dashboard.png)
+<img src="screenshots/dashboard.png" width="800"/>
 
 ### Prediction Form
-![Form](./screenshots/form.png)
+<img src="screenshots/form.png" width="800"/>
 
 ### Insights
-![Insights](./screenshots/insights.png)
+<img src="screenshots/insights.png" width="800"/>
 
----
 
 ## Key Features
 
@@ -39,7 +38,7 @@ affordable — not just approved.
 - Prediction history tracking across sessions
 - Modular, scalable backend architecture
 
----
+
 
 ## System Architecture
 
@@ -60,7 +59,7 @@ The backend processes user input, runs it through a StandardScaler
 and trained regression model, applies risk classification logic,
 and returns a structured JSON response rendered on the dashboard.
 
----
+
 
 ## Tech Stack
 
@@ -79,7 +78,7 @@ Machine Learning:
   - Regression Model — EMI prediction from financial inputs
   - StandardScaler — feature normalization for consistent predictions
 
----
+
 
 ## Risk Classification Logic
 
@@ -92,7 +91,6 @@ Machine Learning:
 This ratio is computed on the backend and returned alongside
 the predicted EMI for display on the dashboard.
 
----
 
 ## API Reference
 
