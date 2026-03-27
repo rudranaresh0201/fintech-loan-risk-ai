@@ -91,21 +91,20 @@ This ratio is computed on the backend and returned alongside
 the predicted EMI for display on the dashboard.
 
 
-## API Reference
+##  API Reference
 
-  POST /finance/predict
+POST /finance/predict
 
-  Accepts a JSON body with user financial details.
-  Returns predicted EMI, affordability ratio, and risk category.
-## Sample Request
+Sample Request:
 
-```json
 {
   "income": 50000,
   "expenses": 20000,
   "loan_amount": 300000,
   "tenure": 36
 }
+
+Sample Response:
 
 {
   "emi": 12500,
