@@ -1,0 +1,30 @@
+# VCS and editor metadata
+.git
+.gitignore
+.vscode
+.idea
+
+# Python cache and virtual envs
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Build/test artifacts
+build/
+dist/
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/
+
+# Local tooling and notebooks outputs
+.ipynb_checkpoints/
+
+# Keep model artifact files (e.g., *.pkl) included in image.

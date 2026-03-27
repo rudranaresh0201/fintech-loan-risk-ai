@@ -1,44 +1,151 @@
-EMI Predict AI – Financial Risk Assessment Platform
+# EMI Predict AI — Full-Stack Financial Risk Assessment System
 
-A Machine Learning–powered system that predicts:
+A production-style fintech application that predicts loan EMIs, evaluates
+financial eligibility, and classifies risk in real time using machine learning.
+Built with a React frontend, FastAPI backend, and a trained regression model —
+integrated end-to-end as a working full-stack system.
 
- emi eligibility (Eligible / Not Eligible)
- Maximum emi Amount the user can afford
+---
 
-This project combines Python, Scikit-Learn, Streamlit, pandas, and joblib to build an end-to-end ML application — from data cleaning to deployment.
-This system evaluates a user’s financial profile and determines whether they qualify for an EMI.
-It also estimates how much EMI they can safely pay based on:
+## Why This Project Matters
 
-Salary
+Managing loan affordability is a real-world challenge for millions of borrowers.
+EMI Predict AI addresses this by combining financial logic with machine learning
+to give users instant, data-driven insights into whether a loan is truly
+affordable — not just approved.
 
-Expenses
+---
 
-Credit score
+## Screenshots
 
-Existing loans
+### Dashboard
+![Dashboard](./screenshots/dashboard.png)
 
-Bank balance
+### Prediction Form
+![Form](./screenshots/form.png)
+
+### Insights
+![Insights](./screenshots/insights.png)
+
+---
+
+## Key Features
+
+- Real-time EMI prediction powered by a trained regression model
+- Financial risk classification: Safe / Borderline / High Risk
+- Affordable vs Required EMI comparison with visual breakdown
+- KPI dashboard with actionable financial insights
+- Structured multi-field input form with validation
+- Prediction history tracking across sessions
+- Modular, scalable backend architecture
+
+---
+
+## System Architecture
+
+React (Frontend)
+   ↓
+Axios (HTTP Client)
+   ↓
+FastAPI (Backend API)
+   ↓
+Service Layer (Business Logic)
+   ↓
+ML Model (Scikit-learn + Scaler)
+   ↓
+JSON Response → Dashboard UI
+
+The frontend communicates with the FastAPI backend via REST API.
+The backend processes user input, runs it through a StandardScaler
+and trained regression model, applies risk classification logic,
+and returns a structured JSON response rendered on the dashboard.
+
+---
+
+## Tech Stack
+
+Frontend:
+  - React (Vite) — fast, component-based UI
+  - CSS Modules — scoped, maintainable styling
+  - Axios — HTTP client for API communication
+
+Backend:
+  - FastAPI — high-performance Python API framework
+  - Pydantic — request validation and schema enforcement
+  - Modular architecture — routes, services, and schemas separated by concern
+
+Machine Learning:
+  - Scikit-learn — model training and preprocessing
+  - Regression Model — EMI prediction from financial inputs
+  - StandardScaler — feature normalization for consistent predictions
+
+---
+
+## Risk Classification Logic
+
+  Affordability Ratio = Required EMI / Affordable EMI
+
+  Safe        ->  Ratio is within comfortable limits
+  Borderline  ->  Ratio is approaching the threshold
+  High Risk   ->  Ratio exceeds affordable capacity
+
+This ratio is computed on the backend and returned alongside
+the predicted EMI for display on the dashboard.
+
+---
+
+## API Reference
+
+  POST /finance/predict
+
+  Accepts a JSON body with user financial details.
+  Returns predicted EMI, affordability ratio, and risk category.
+### Sample Request
+
+```json
+{
+  "income": 50000,
+  "expenses": 20000,
+  "loan_amount": 300000,
+  "tenure": 36
+}
+
+{
+  "emi": 12500,
+  "affordability_ratio": 0.8,
+  "risk_level": "Safe"
+}
 
 
-Machine Learning Models Used
-Logistic Regression – EMI Eligibility
-Why used:
-Works best for binary classification
-Interpretable
-Fast and stable
-Perfect for Yes/No type outcomes
+## Setup and Installation
 
-Model predicts:
-Eligible or Not_Eligible
-Linear Regression – EMI Amount
-Why used:
-Output is a continuous number
-Simple, explainable
-Works well after feature scaling
+Prerequisites: Python 3.9+, Node.js 18+
 
-Model predicts:
-max_monthly_emi
+Backend:
+  cd backend
+  pip install -r requirements.txt
+  uvicorn backend.main:app --reload
 
-Household details
+Frontend:
+  cd frontend
+  npm install
+  npm run dev
 
-Loan request details
+  App runs at: http://localhost:5173
+  API runs at: http://localhost:8000
+
+
+
+## Planned Improvements
+
+- Interactive charts using Recharts
+- Explainable AI — reasoning behind each risk classification
+- Data persistence with a database layer
+- Cloud deployment (Render / Vercel)
+
+
+
+## Author
+
+Rudra Naresh
+
