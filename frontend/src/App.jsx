@@ -1,4 +1,15 @@
 import { useMemo, useState } from 'react'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import styles from './App.module.css'
 
 const API_BASE_URL = 'http://127.0.0.1:8000'
@@ -96,24 +107,27 @@ function App() {
   const [activeSidebar, setActiveSidebar] = useState('dashboard')
   const [activeScreen, setActiveScreen] = useState('dashboard')
   const [formData, setFormData] = useState(defaultForm)
+  const [result, setResult] = useState(null)
   const [prediction, setPrediction] = useState(null)
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
 
-  const affordableEmi = prediction?.max_monthly_emi_predicted ?? 0
-  const requiredEmi = prediction?.formula_monthly_emi_for_requested_loan ?? 0
+  const affordableEmi = result?.affordable_emi ?? prediction?.max_monthly_emi_predicted ?? 0
+  const requiredEmi = result?.required_emi ?? prediction?.formula_monthly_emi_for_requested_loan ?? 0
   const affordabilityRatio = requiredEmi > 0 ? requiredEmi / Math.max(affordableEmi, 1) : 0
   const riskLevel = getRiskLevel(affordabilityRatio)
   const emiGap = Math.max(requiredEmi - affordableEmi, 0)
 
-  const barWidths = useMemo(() => {
-    const max = Math.max(1, affordableEmi, requiredEmi)
-    return {
-      affordable: `${(affordableEmi / max) * 100}%`,
-      required: `${(requiredEmi / max) * 100}%`,
-    }
-  }, [affordableEmi, requiredEmi])
+  const chartData = useMemo(
+    () => [
+      { name: 'Affordable EMI', value: Number(result?.affordable_emi ?? 0) },
+      { name: 'Required EMI', value: Number(result?.required_emi ?? 0) },
+    ],
+    [result],
+  )
+
+  const hasChartData = chartData.some((item) => item.value > 0)
 
   const trendLine = useMemo(
     () => createTrendPoints(affordableEmi || 1, requiredEmi || 1),
@@ -163,6 +177,10 @@ function App() {
 
       const data = await response.json()
       setPrediction(data)
+      setResult({
+        affordable_emi: data?.max_monthly_emi_predicted ?? 0,
+        required_emi: data?.formula_monthly_emi_for_requested_loan ?? 0,
+      })
       setHistory((current) => [{ id: Date.now(), date: new Date(), data }, ...current].slice(0, 6))
       setActiveScreen('dashboard')
       setActiveSidebar('dashboard')
@@ -174,6 +192,30 @@ function App() {
   }
 
   function renderDashboard() {
+    const CustomTooltip = ({ active, payload, label }) => {
+      if (!active || !payload || payload.length === 0) {
+        return null
+      }
+
+      const value = Number(payload[0]?.value ?? 0)
+      return (
+        <div
+          style={{
+            background: '#ffffff',
+            border: '1px solid #e2e8f0',
+            borderRadius: 8,
+            padding: '8px 10px',
+            boxShadow: '0 6px 24px rgba(15, 23, 42, 0.08)',
+          }}
+        >
+          <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>{label}</p>
+          <p style={{ margin: '4px 0 0', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>
+            {currency.format(value)}
+          </p>
+        </div>
+      )
+    }
+
     return (
       <>
         <section className={styles.metricsGrid}>
@@ -216,29 +258,40 @@ function App() {
             <span className={styles.inlinePill}>Affordable vs Required</span>
           </div>
 
-          <div className={styles.barTrackGroup}>
-            <div className={styles.barRow}>
-              <label>Affordable EMI</label>
-              <div className={styles.barTrack}>
-                <div
-                  className={`${styles.barFill} ${styles.safe}`}
-                  style={{ width: barWidths.affordable }}
-                />
-              </div>
-              <strong>{currency.format(affordableEmi)}</strong>
+          {hasChartData ? (
+            <div style={{ width: '100%', height: 280 }}>
+              <ResponsiveContainer>
+                <BarChart data={chartData} margin={{ top: 18, right: 8, left: 8, bottom: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#334155', fontSize: 12 }} />
+                  <YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    width={96}
+                    tick={{ fill: '#64748b', fontSize: 12 }}
+                    tickFormatter={(value) => currency.format(value)}
+                  />
+                  <Tooltip cursor={{ fill: 'rgba(15, 23, 42, 0.04)' }} content={<CustomTooltip />} />
+                  <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={64}>
+                    {chartData.map((entry) => (
+                      <Cell
+                        key={entry.name}
+                        fill={entry.name === 'Affordable EMI' ? '#0f766e' : '#2563eb'}
+                      />
+                    ))}
+                    <LabelList
+                      dataKey="value"
+                      position="top"
+                      formatter={(value) => currency.format(value)}
+                      style={{ fill: '#0f172a', fontSize: 12, fontWeight: 600 }}
+                    />
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </div>
-
-            <div className={styles.barRow}>
-              <label>Required EMI</label>
-              <div className={styles.barTrack}>
-                <div
-                  className={`${styles.barFill} ${requiredEmi > affordableEmi ? styles.danger : styles.safe}`}
-                  style={{ width: barWidths.required }}
-                />
-              </div>
-              <strong>{currency.format(requiredEmi)}</strong>
-            </div>
-          </div>
+          ) : (
+            <p className={styles.emptyState}>Run a prediction to view EMI comparison chart.</p>
+          )}
 
           <p className={styles.comparisonNote}>
             {requiredEmi > affordableEmi
