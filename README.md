@@ -17,22 +17,9 @@ affordable — not just approved.
 
 ##   Screenshots
 
-###  Dashboard
-![Dashboard](./screenshots/dashboard.png)
-
-> Overview of EMI prediction results with financial breakdown.
-
----
-
-### Input Form
-![Form](./screenshots/form.png)
-
-> User input interface for loan amount, tenure, income, and expenses.
-
-
-### Insights & Analytics
-![Insights](./screenshots/insights.png)
-
+![Dashboard](screenshots/dashboard.png)
+![Form](screenshots/form.png)
+![Insights](screenshots/insights.png)
 
 
 
