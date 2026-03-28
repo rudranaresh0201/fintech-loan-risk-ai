@@ -15,17 +15,25 @@ to give users instant, data-driven insights into whether a loan is truly
 affordable — not just approved.
 
 
+##   Screenshots
 
-##  Screenshots
+###  Dashboard
+![Dashboard](./screenshots/dashboard.png)
 
-### Dashboard
-<img src="screenshots/dashboard.png" width="800"/>
+> Overview of EMI prediction results with financial breakdown.
 
-### Prediction Form
-<img src="screenshots/form.png" width="800"/>
+---
 
-### Insights
-<img src="screenshots/insights.png" width="800"/>
+### Input Form
+![Form](./screenshots/form.png)
+
+> User input interface for loan amount, tenure, income, and expenses.
+
+
+### Insights & Analytics
+![Insights](./screenshots/insights.png)
+
+
 
 
 ## Key Features
