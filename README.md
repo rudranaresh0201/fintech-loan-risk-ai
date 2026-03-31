@@ -15,30 +15,27 @@ Prediction History Tracking
 SYSTEM OVERVIEW
 
 BACKEND (FastAPI)
-
-Handles prediction logic
-LSTM inference for financial risk
-Rule-based explainability
-EMI calculation engine
+- Handles prediction logic  
+- LSTM inference for financial risk  
+- Rule-based explainability  
+- EMI calculation engine  
 
 FRONTEND (React + Vite)
-
-Interactive dashboard UI
-Real-time prediction visualization
-Risk meter & financial charts
-Insights and recommendations display
+- Interactive dashboard UI  
+- Real-time prediction visualization  
+- Risk meter & financial charts  
+- Insights and recommendations display  
 
 ML MODEL
-
-LSTM processes 6-month financial sequences
-Features:
-Income
-Expenses
-Debt-to-Income Ratio
-EMI presence
-Outputs:
-Risk score (0–1)
-Financial stress prediction
+- LSTM processes 6-month financial sequences  
+- Features:
+  - Income  
+  - Expenses  
+  - Debt-to-Income Ratio  
+  - EMI presence  
+- Outputs:
+  - Risk score (0–1)  
+  - Financial stress prediction  
 
 KEY CONCEPTS
 
@@ -62,16 +59,21 @@ SCREENSHOTS
 ![Architecture](backend/screenshots/system architecture.png)
 
 
-##  Project Screenshots
 
-### Dashboard
-![Dashboard](backend/screenshots/dashboard.png)
 
-### Prediction Output
-![Prediction](backend/screenshots/prediction.png)
+SCREENSHOTS
 
-### Risk Analysis
-![Risk Analysis](backend/screenshots/risk-analysis.png)Clone repository
+##  System Architecture
+![Architecture](screenshots/architecture.png)
+
+##  Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+##  Prediction Output
+![Prediction](screenshots/prediction.png)
+
+##  Risk Analysis
+![Risk](screenshots/risk-analysis.png)
 
 git clone https://github.com/your-username/fintech-loan-risk-ai.git
 
