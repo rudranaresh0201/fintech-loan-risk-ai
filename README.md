@@ -52,25 +52,27 @@ Insights:
 Existing EMI increases financial burden
 Requested EMI exceeds affordability
 
-SCREENSHOTS
 
 
 
 
 
 SCREENSHOTS
-
 ##  System Architecture
-![Architecture](screenshots/architecture.png)
+![Architecture](backend/screenshots/architecture.png)
 
 ##  Dashboard
-![Dashboard](screenshots/dashboard.png)
+![Dashboard](backend/screenshots/dashboard.png)
 
 ##  Prediction Output
-![Prediction](screenshots/prediction.png)
+![Prediction](backend/screenshots/prediction.png)
 
 ##  Risk Analysis
-![Risk](screenshots/risk-analysis.png)
+![Risk](backend/screenshots/risk-analysis.png)
+
+
+
+
 
 git clone https://github.com/your-username/fintech-loan-risk-ai.git
 
