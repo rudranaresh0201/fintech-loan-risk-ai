@@ -100,15 +100,6 @@ Advanced explainability (SHAP/LIME)
 Improved LSTM training
 What-if simulation sliders
 
-WHY THIS PROJECT STANDS OUT
 
-Combines ML + Full Stack + Product Thinking
-Not just prediction → Decision Support System
-Includes explainability and recommendations
-Real-world fintech use case
 
-AUTHOR
 
-Rudra Naresh
-Electronics Engineering @ VJTI
-Interested in AI, Fintech, and Embedded Systems
