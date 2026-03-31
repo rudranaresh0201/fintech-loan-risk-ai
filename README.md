@@ -54,9 +54,6 @@ Requested EMI exceeds affordability
 
 SCREENSHOTS
 
-##  System Architecture
-
-![Architecture](backend/screenshots/system architecture.png)
 
 
 
