@@ -33,6 +33,21 @@ affordable — not just approved.
 - Prediction history tracking across sessions
 - Modular, scalable backend architecture
 
+## How the Model Works
+
+The system uses a trained machine learning model to evaluate loan risk based on:
+
+- Income
+- Loan Amount
+- Existing Liabilities
+- Tenure
+
+The model predicts:
+- EMI affordability
+- Risk category (Low / Medium / High)
+
+This enables users to make informed financial decisions.
+
 
 
 ##  System Architecture

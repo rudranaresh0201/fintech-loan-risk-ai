@@ -76,3 +76,17 @@ class EmiCalculationRequest(BaseModel):
     principal: float = Field(..., gt=0, le=100_000_000)
     annual_interest_rate: float = Field(..., gt=0, le=60)
     tenure_months: int = Field(..., ge=1, le=600)
+
+
+class MonthlyFinancialRecord(BaseModel):
+    """One monthly financial observation used for risk time-series inference."""
+
+    income: float = Field(..., ge=0, le=5_000_000)
+    expenses: float = Field(..., ge=0, le=5_000_000)
+    emi_paid: float = Field(..., ge=0, le=2_000_000)
+
+
+class RiskSequenceRequest(BaseModel):
+    """Sequence payload for default-risk prediction using LSTM."""
+
+    sequence: list[MonthlyFinancialRecord] = Field(..., min_length=6, max_length=24)

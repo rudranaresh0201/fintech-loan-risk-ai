@@ -24,6 +24,13 @@ class Settings:
     regression_model_file: str = os.getenv(
         "REGRESSION_MODEL_FILE", "regression_model.pkl"
     )
+    risk_model_file: str = os.getenv("RISK_MODEL_FILE", "model.pkl")
+    default_risk_lstm_file: str = os.getenv(
+        "DEFAULT_RISK_LSTM_FILE", "default_risk_lstm.pt"
+    )
+    default_risk_normalizer_file: str = os.getenv(
+        "DEFAULT_RISK_NORMALIZER_FILE", "default_risk_normalizer.pkl"
+    )
     scaler_file: str = os.getenv("SCALER_FILE", "scaler.pkl")
     feature_columns_file: str = os.getenv("FEATURE_COLUMNS_FILE", "feature_columns.pkl")
 
@@ -34,6 +41,18 @@ class Settings:
     @property
     def regression_model_path(self) -> Path:
         return self.model_dir / self.regression_model_file
+
+    @property
+    def risk_model_path(self) -> Path:
+        return self.model_dir / self.risk_model_file
+
+    @property
+    def default_risk_lstm_path(self) -> Path:
+        return self.model_dir / self.default_risk_lstm_file
+
+    @property
+    def default_risk_normalizer_path(self) -> Path:
+        return self.model_dir / self.default_risk_normalizer_file
 
     @property
     def scaler_path(self) -> Path:

@@ -5,9 +5,10 @@ from __future__ import annotations
 from fastapi import APIRouter
 
 from backend.services.emi_service import calculate_emi
+from backend.services.default_risk_service import predict_default_risk
 from backend.services.prediction_service import predict_emi_eligibility
-from schemas.requests import EmiCalculationRequest, FinancialProfile
-from schemas.responses import EmiCalculationResponse, PredictResponse
+from schemas.requests import EmiCalculationRequest, FinancialProfile, RiskSequenceRequest
+from schemas.responses import EmiCalculationResponse, PredictResponse, RiskPredictResponse
 
 
 router = APIRouter(tags=["finance"])
@@ -34,3 +35,10 @@ def calculate(payload: EmiCalculationRequest) -> EmiCalculationResponse:
         total_payable=result.total_payable,
         total_interest=result.total_interest,
     )
+
+
+@router.post("/predict-risk", response_model=RiskPredictResponse)
+def predict_risk(payload: RiskSequenceRequest) -> RiskPredictResponse:
+    """Predict loan default risk from monthly financial sequences."""
+
+    return predict_default_risk(payload)

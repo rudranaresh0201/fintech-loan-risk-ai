@@ -16,6 +16,7 @@ const API_BASE_URL = 'http://127.0.0.1:8000'
 
 const defaultForm = {
   monthly_salary: 90000,
+  age: 30,
   years_of_employment: 6,
   monthly_rent: 18000,
   family_size: 4,
@@ -112,20 +113,30 @@ function App() {
   const [history, setHistory] = useState([])
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState('')
+  const affordableEmi = prediction?.max_monthly_emi_predicted ?? 0
+  const requiredEmi = prediction?.formula_monthly_emi_for_requested_loan ?? 0
 
-  const affordableEmi = result?.affordable_emi ?? prediction?.max_monthly_emi_predicted ?? 0
-  const requiredEmi = result?.required_emi ?? prediction?.formula_monthly_emi_for_requested_loan ?? 0
-  const affordabilityRatio = requiredEmi > 0 ? requiredEmi / Math.max(affordableEmi, 1) : 0
-  const riskLevel = getRiskLevel(affordabilityRatio)
-  const emiGap = Math.max(requiredEmi - affordableEmi, 0)
+const affordabilityRatio = requiredEmi > 0
+  ? requiredEmi / Math.max(affordableEmi, 1)
+  : 0
+const burdenRatio = affordableEmi > 0
+  ? requiredEmi / affordableEmi
+  : 0;
 
-  const chartData = useMemo(
-    () => [
-      { name: 'Affordable EMI', value: Number(result?.affordable_emi ?? 0) },
-      { name: 'Required EMI', value: Number(result?.required_emi ?? 0) },
-    ],
-    [result],
-  )
+const emiGap = Math.max(requiredEmi - affordableEmi, 0)
+
+//  FIXED risk %
+const riskPercent = Math.min(
+  Math.max(
+    prediction?.risk_percentage ?? ((prediction?.confidence ?? 0) * 100),
+    0
+  ),
+  100
+);
+  const chartData = [
+    { name: 'Affordable EMI', value: affordableEmi },
+    { name: 'Required EMI', value: requiredEmi },
+]
 
   const hasChartData = chartData.some((item) => item.value > 0)
 
@@ -172,8 +183,10 @@ function App() {
 
       if (!response.ok) {
         const errorBody = await response.text()
-        throw new Error(errorBody || 'Prediction API request failed')
-      }
+        console.error("BACKEND ERROR:", errorBody)
+        alert(errorBody)
+        return
+}
 
       const data = await response.json()
       setPrediction(data)
@@ -191,146 +204,220 @@ function App() {
     }
   }
 
-  function renderDashboard() {
-    const CustomTooltip = ({ active, payload, label }) => {
-      if (!active || !payload || payload.length === 0) {
-        return null
-      }
+  const riskLevel =
+    riskPercent < 30
+      ? { label: 'Low Risk', color: '#16a34a' }
+      : riskPercent < 70
+      ? { label: 'Moderate', color: '#f59e0b' }
+      : { label: 'High Risk', color: '#dc2626' }
 
-      const value = Number(payload[0]?.value ?? 0)
-      return (
-        <div
-          style={{
-            background: '#ffffff',
-            border: '1px solid #e2e8f0',
-            borderRadius: 8,
-            padding: '8px 10px',
-            boxShadow: '0 6px 24px rgba(15, 23, 42, 0.08)',
-          }}
-        >
-          <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>{label}</p>
-          <p style={{ margin: '4px 0 0', fontSize: 14, fontWeight: 700, color: '#0f172a' }}>
-            {currency.format(value)}
-          </p>
-        </div>
-      )
-    }
+  function renderDashboard() {
+  const isEligible = prediction?.eligibility_code === 0;
+  const safeRisk = Number(riskPercent ?? 0);
+
+  const riskMeta =
+    safeRisk < 30
+      ? { label: "Low Risk", color: "#16a34a" }
+      : safeRisk < 70
+      ? { label: "Moderate Risk", color: "#f59e0b" }
+      : { label: "High Risk", color: "#dc2626" };
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload || payload.length === 0) return null;
+
+    const value = Number(payload[0]?.value ?? 0);
 
     return (
-      <>
-        <section className={styles.metricsGrid}>
-          <article className={styles.metricCard}>
-            <h3>Eligibility Status</h3>
-            <p className={styles.metricValue}>{prediction?.eligibility_label ?? 'Pending'}</p>
-            <span
-              className={`${styles.badge} ${
-                prediction?.eligibility_code === 1 ? styles.success : styles.danger
-              }`}
-            >
-              {prediction?.eligibility_code === 1 ? 'Eligible' : prediction ? 'Not Eligible' : 'Awaiting'}
-            </span>
-          </article>
+      <div style={{
+        background: '#ffffff',
+        border: '1px solid #e2e8f0',
+        borderRadius: 8,
+        padding: '8px 10px',
+        boxShadow: '0 6px 24px rgba(15, 23, 42, 0.08)',
+      }}>
+        <p style={{ margin: 0, fontSize: 12 }}>{label}</p>
+        <p style={{ margin: '4px 0 0', fontWeight: 700 }}>
+          {currency.format(value)}
+        </p>
+      </div>
+    );
+  };
 
-          <article className={styles.metricCard}>
-            <h3>Maximum Affordable EMI</h3>
-            <p className={styles.metricValue}>{currency.format(affordableEmi)}</p>
-            <span className={styles.caption}>Based on profile and expenses</span>
-          </article>
+  return (
+    <>
+      {/* METRICS */}
+      <section className={styles.metricsGrid}>
 
-          <article className={styles.metricCard}>
-            <h3>Required EMI for Loan</h3>
-            <p className={styles.metricValue}>{currency.format(requiredEmi)}</p>
-            <span className={styles.caption}>Formula-based estimate</span>
-          </article>
+        <article className={styles.metricCard}>
+          <h3>Maximum Affordable EMI</h3>
+          <p className={styles.metricValue}>
+            {affordableEmi === 0
+              ? "Not Affordable"
+              : currency.format(affordableEmi)}
+          </p>
+        </article>
 
-          <article className={styles.metricCard}>
-            <h3>Confidence Score</h3>
-            <p className={styles.metricValue}>
-              {prediction?.confidence != null ? percent.format(prediction.confidence) : '--'}
-            </p>
-            <span className={styles.caption}>Model reliability indicator</span>
-          </article>
-        </section>
+        <article className={styles.metricCard}>
+          <h3>Required EMI</h3>
+          <p className={styles.metricValue}>{currency.format(requiredEmi)}</p>
+        </article>
 
-        <section className={styles.sectionCard}>
-          <div className={styles.sectionHeader}>
-            <h2>Financial Comparison</h2>
-            <span className={styles.inlinePill}>Affordable vs Required</span>
+        <article className={styles.metricCard}>
+          <h3>Risk %</h3>
+          <p className={styles.metricValue}>
+            {prediction ? `${riskPercent.toFixed(1)}%` : '--'}
+          </p>
+        </article>
+      </section>
+
+      {/* COMPARISON */}
+      <section className={styles.sectionCard}>
+        <h2>Financial Comparison</h2>
+
+        {hasChartData ? (
+          <div style={{ width: '100%', height: 280 }}>
+            <ResponsiveContainer>
+              <BarChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis tickFormatter={(v) => currency.format(v)} />
+                <Tooltip content={<CustomTooltip />} />
+
+                <Bar dataKey="value">
+                  {chartData.map((entry) => (
+                    <Cell
+                      key={entry.name}
+                      fill={entry.name === 'Affordable EMI' ? '#16a34a' : '#2563eb'}
+                    />
+                  ))}
+                  <LabelList
+                    dataKey="value"
+                    position="top"
+                    formatter={(v) => currency.format(v)}
+                  />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <p>Run prediction to see chart</p>
+        )}
+
+        {/*  SMART MESSAGE */}
+        <p style={{
+          marginTop: 10,
+          color: requiredEmi > affordableEmi ? '#dc2626' : '#16a34a',
+          fontWeight: 600
+        }}>
+          {requiredEmi > affordableEmi
+            ? ` EMI exceeds affordability by ${currency.format(emiGap)}`
+            : ` EMI is within safe limit`}
+        </p>
+
+        {/*  FINAL DECISION */}
+        <p style={{ fontWeight: 600 }}>
+          {prediction
+            ? isEligible
+              ? " You can safely take this loan"
+              : " High financial risk — reconsider loan terms"
+            : "Run prediction to see decision"}
+        </p>
+      </section>
+
+      {/* RISK + TREND */}
+      <section className={styles.twoColumn}>
+        <article className={styles.sectionCard}>
+          <h2>Risk Analysis</h2>
+
+          <div>
+       <p>
+         EMI Burden Ratio: {burdenRatio.toFixed(2)}
+       </p>
+            <p>Status: {riskLevel.label}</p>
           </div>
 
-          {hasChartData ? (
-            <div style={{ width: '100%', height: 280 }}>
-              <ResponsiveContainer>
-                <BarChart data={chartData} margin={{ top: 18, right: 8, left: 8, bottom: 8 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#334155', fontSize: 12 }} />
-                  <YAxis
-                    axisLine={false}
-                    tickLine={false}
-                    width={96}
-                    tick={{ fill: '#64748b', fontSize: 12 }}
-                    tickFormatter={(value) => currency.format(value)}
-                  />
-                  <Tooltip cursor={{ fill: 'rgba(15, 23, 42, 0.04)' }} content={<CustomTooltip />} />
-                  <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={64}>
-                    {chartData.map((entry) => (
-                      <Cell
-                        key={entry.name}
-                        fill={entry.name === 'Affordable EMI' ? '#0f766e' : '#2563eb'}
-                      />
-                    ))}
-                    <LabelList
-                      dataKey="value"
-                      position="top"
-                      formatter={(value) => currency.format(value)}
-                      style={{ fill: '#0f172a', fontSize: 12, fontWeight: 600 }}
-                    />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+          {/*  RISK METER */}
+          <div style={{ marginTop: 10 }}>
+            <div style={{
+              height: 10,
+              background: '#e2e8f0',
+              borderRadius: 5
+            }}>
+              <div style={{
+                width: `${riskPercent.toFixed(1)}%`,
+                height: '100%',
+                borderRadius: 5,
+                background:
+                  riskPercent < 30 ? '#16a34a' :
+                  riskPercent < 70 ? '#f59e0b' :
+                  '#dc2626'
+              }} />
             </div>
-          ) : (
-            <p className={styles.emptyState}>Run a prediction to view EMI comparison chart.</p>
+          </div>
+
+          
+          <p style={{ marginTop: 8, color: riskMeta.color, fontWeight: "bold" }}>
+            {safeRisk.toFixed(1)}% ({riskMeta.label})
+          </p>
+
+          {/*  DECISION FACTORS */}
+          {prediction?.explainability?.decision_factors?.length > 0 && (
+            <>
+              <h4 style={{ marginTop: 10 }}>Recommendations</h4>
+              <ul>
+                {requiredEmi > affordableEmi && (
+                  <li>Reduce loan amount or increase tenure</li>
+                )}
+
+
+
+                {prediction?.confidence < 0.5 && (
+                  <li>Maintain a higher savings buffer before applying</li>
+                )}
+
+                {affordableEmi === 0 && (
+                  <li>Current financials do not support additional EMI — avoid loan</li>
+                )}
+              </ul>
+            </>
           )}
 
-          <p className={styles.comparisonNote}>
-            {requiredEmi > affordableEmi
-              ? `Required EMI is ${currency.format(emiGap)} above affordable limit.`
-              : 'Required EMI is within affordable limit.'}
-          </p>
-        </section>
+          {/*  WHY THIS DECISION */}
+          <h4>Recommended Actions</h4>
+          <ul>
+            {prediction?.confidence > 0.6 && (
+              <li>High risk — consider reducing loan amount</li>
+           )}
 
-        <section className={styles.twoColumn}>
-          <article className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <h2>Risk Analysis</h2>
-              <span className={`${styles.badge} ${styles[riskLevel.tone]}`}>{riskLevel.label}</span>
-            </div>
-            <div className={styles.kpiList}>
-              <div>
-                <span>affordability_ratio</span>
-                <strong>{affordabilityRatio ? affordabilityRatio.toFixed(2) : '--'}</strong>
-              </div>
-              <div>
-                <span>risk_level</span>
-                <strong>{riskLevel.label}</strong>
-              </div>
-            </div>
-          </article>
+           {prediction?.max_monthly_emi_predicted <
+             prediction?.formula_monthly_emi_for_requested_loan && (
+             <li>Requested EMI exceeds affordability — increase tenure or reduce loan</li>
+            )}
 
-          <article className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <h2>EMI Trend (12 Months)</h2>
-              <span className={styles.inlinePill}>Forecast</span>
-            </div>
-            <svg className={styles.trendChart} viewBox="0 0 270 100" role="img" aria-label="EMI trend line">
-              <polyline points={trendLine} />
-            </svg>
-          </article>
-        </section>
-      </>
-    )
-  }
+            {prediction?.confidence > 0.5 && (
+              <li>Financial stress is moderate/high — proceed cautiously</li>
+            )}
+
+            <li>Maintain higher savings to improve eligibility</li>
+          </ul>
+        </article>
+
+        <article className={styles.sectionCard}>
+          <h2>EMI Trend</h2>
+          <span>Simulated</span>
+
+          <svg viewBox="0 0 270 100">
+            <polyline points={trendLine} />
+          </svg>
+        </article>
+      </section>
+    </>
+  );
+}
+    
+       
+                 
+     
 
   function renderInsights() {
     return (

@@ -30,6 +30,7 @@ class PredictResponse(BaseModel):
     max_monthly_emi_predicted: float
     confidence: Optional[float] = None
     formula_monthly_emi_for_requested_loan: float
+    risk_label: Optional[str] = None
     explainability: PredictionExplainability
 
 
@@ -47,3 +48,11 @@ class HealthResponse(BaseModel):
     status: str
     models_loaded: bool
     message: str
+
+
+class RiskPredictResponse(BaseModel):
+    """Default-risk endpoint output."""
+
+    risk_score: float
+    risk_level: str
+    explanations: List[str]

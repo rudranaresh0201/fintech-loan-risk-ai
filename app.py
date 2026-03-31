@@ -22,7 +22,7 @@ feature_cols = [c for c in feature_cols if c not in bad_cols]
 
   # Input column list
 
-st.title("💰 EMI Predict AI – Financial Risk Assessment Platform")
+st.title("EMI Predict AI – Financial Risk Assessment Platform")
 st.write("Enter your financial details to predict EMI eligibility and maximum EMI limit.")
 
 # ---------------------------
