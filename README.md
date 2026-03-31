@@ -1,157 +1,114 @@
-# EMI Predict AI — Full-Stack Financial Risk Assessment System
+FINTECH LOAN RISK INTELLIGENCE SYSTEM
 
-A production-style fintech application that predicts loan EMIs, evaluates
-financial eligibility, and classifies risk in real time using machine learning.
-Built with a React frontend, FastAPI backend, and a trained regression model —
-integrated end-to-end as a working full-stack system.
+An end-to-end AI-powered fintech application that predicts loan eligibility, EMI affordability, and financial risk using an LSTM-based model with an interactive dashboard.
 
----
+FEATURES
 
-## Why This Project Matters
+Loan Eligibility Prediction
+EMI Calculation & Affordability Analysis
+LSTM-Based Risk Scoring
+Financial Comparison Dashboard
+Explainable AI (XAI) Insights
+Recommendation Engine (Actionable Suggestions)
+Prediction History Tracking
 
-Managing loan affordability is a real-world challenge for millions of borrowers.
-EMI Predict AI addresses this by combining financial logic with machine learning
-to give users instant, data-driven insights into whether a loan is truly
-affordable — not just approved.
+SYSTEM OVERVIEW
 
+BACKEND (FastAPI)
 
-##   Screenshots
+Handles prediction logic
+LSTM inference for financial risk
+Rule-based explainability
+EMI calculation engine
 
-![Dashboard](screenshots/dashboard.png)
-![Form](screenshots/form.png)
-![Insights](screenshots/insights.png)
+FRONTEND (React + Vite)
 
+Interactive dashboard UI
+Real-time prediction visualization
+Risk meter & financial charts
+Insights and recommendations display
 
+ML MODEL
 
-## Key Features
+LSTM processes 6-month financial sequences
+Features:
+Income
+Expenses
+Debt-to-Income Ratio
+EMI presence
+Outputs:
+Risk score (0–1)
+Financial stress prediction
 
-- Real-time EMI prediction powered by a trained regression model
-- Financial risk classification: Safe / Borderline / High Risk
-- Affordable vs Required EMI comparison with visual breakdown
-- KPI dashboard with actionable financial insights
-- Structured multi-field input form with validation
-- Prediction history tracking across sessions
-- Modular, scalable backend architecture
+KEY CONCEPTS
 
-## How the Model Works
+Debt-to-Income Ratio (DTI): Financial burden indicator
+Risk Score: Probability of financial stress
+Affordable EMI: Based on 40% income threshold
+Explainability: Rule-based + model-based reasoning
 
-The system uses a trained machine learning model to evaluate loan risk based on:
+SAMPLE OUTPUT
 
-- Income
-- Loan Amount
-- Existing Liabilities
-- Tenure
+Eligibility: Not Eligible
+Risk Score: ~55% (Moderate Risk)
+Insights:
+Existing EMI increases financial burden
+Requested EMI exceeds affordability
 
-The model predicts:
-- EMI affordability
-- Risk category (Low / Medium / High)
-
-This enables users to make informed financial decisions.
-
-
+SCREENSHOTS
 
 ##  System Architecture
 
-Frontend (React)
-    ↓
-API Layer (Axios)
-    ↓
-Backend (FastAPI)
-    ↓
-Service Layer (Business Logic)
-    ↓
-ML Model (Scikit-learn + StandardScaler)
-    ↓
-JSON Response → Dashboard UI
-
-The frontend communicates with the FastAPI backend via REST APIs.
-The backend processes user input, applies preprocessing and model inference,
-computes risk metrics, and returns structured results for visualization.
+![Architecture](backend/screenshots/system architecture.png)
 
 
+##  Project Screenshots
 
-## Tech Stack
+### Dashboard
+![Dashboard](backend/screenshots/dashboard.png)
 
-Frontend:
-  - React (Vite) — fast, component-based UI
-  - CSS Modules — scoped, maintainable styling
-  - Axios — HTTP client for API communication
+### Prediction Output
+![Prediction](backend/screenshots/prediction.png)
 
-Backend:
-  - FastAPI — high-performance Python API framework
-  - Pydantic — request validation and schema enforcement
-  - Modular architecture — routes, services, and schemas separated by concern
+### Risk Analysis
+![Risk Analysis](backend/screenshots/risk-analysis.png)Clone repository
 
-Machine Learning:
-  - Scikit-learn — model training and preprocessing
-  - Regression Model — EMI prediction from financial inputs
-  - StandardScaler — feature normalization for consistent predictions
+git clone https://github.com/your-username/fintech-loan-risk-ai.git
 
+cd fintech-loan-risk-ai
 
+Backend Setup
 
-## Risk Classification Logic
+cd backend
+pip install -r requirements.txt
+uvicorn main:app --reload
 
-  Affordability Ratio = Required EMI / Affordable EMI
+Frontend Setup
 
-  Safe        ->  Ratio is within comfortable limits
-  Borderline  ->  Ratio is approaching the threshold
-  High Risk   ->  Ratio exceeds affordable capacity
+cd frontend
+npm install
+npm run dev
 
-This ratio is computed on the backend and returned alongside
-the predicted EMI for display on the dashboard.
+API ENDPOINT
 
+POST /predict
 
-##  API Reference
+FUTURE IMPROVEMENTS
 
-POST /finance/predict
+Real financial dataset integration
+Advanced explainability (SHAP/LIME)
+Improved LSTM training
+What-if simulation sliders
 
-Sample Request:
+WHY THIS PROJECT STANDS OUT
 
-{
-  "income": 50000,
-  "expenses": 20000,
-  "loan_amount": 300000,
-  "tenure": 36
-}
+Combines ML + Full Stack + Product Thinking
+Not just prediction → Decision Support System
+Includes explainability and recommendations
+Real-world fintech use case
 
-Sample Response:
-
-{
-  "emi": 12500,
-  "affordability_ratio": 0.8,
-  "risk_level": "Safe"
-}
-
-
-## Setup and Installation
-
-Prerequisites: Python 3.9+, Node.js 18+
-
-Backend:
-  cd backend
-  pip install -r requirements.txt
-  uvicorn backend.main:app --reload
-
-Frontend:
-  cd frontend
-  npm install
-  npm run dev
-
-  App runs at: http://localhost:5173
-  API runs at: http://localhost:8000
-
-
-
-##  Planned Improvements
-
-- Interactive charts using Recharts
-- Explainable AI — reasoning behind each risk classification
-- Data persistence with a database layer
-- Cloud deployment (Render / Vercel)
-
-
-
-## Author
+AUTHOR
 
 Rudra Naresh
-
+Electronics Engineering @ VJTI
+Interested in AI, Fintech, and Embedded Systems
